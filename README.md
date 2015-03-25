@@ -1,5 +1,5 @@
 # Auto-Mediasync
-To automatically mount and rsync media onto ubuntu server
+To automatically mount and rsync media onto ubuntu server, create a script that is executable and put into /usr/bin
 
 ```
 #!/bin/bash
