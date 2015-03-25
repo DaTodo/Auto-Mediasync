@@ -1,24 +1,25 @@
 # Auto-Mediasync
 To automatically mount and rsync media onto ubuntu server
 
-1. Install usbmount
-  
-  ```
-  sudo apt-get install usbmount
-  ```
-  
-2. Give Permission and allow users
-  
-  ```
-  lsblk //find device
-  chmod 777 /dev/sdx
-  sudo sed -in '0,/MOUNTOPTIONS="/s/MOUNTOPTIONS="/MOUNTOPTIONS="user,umask=000,/' /etc/usbmount/usbmount.conf
-  ```
-  
-3. Running Script After Mount
+```
+#!/bin/bash
 
-  ```
-  vim /etc/udev/010custom.rules
-  lsusb //to find ID and PRODUCT, DEVICE can be user defined
-  BUS="usb", SYSFS{idVendor}="**IDVENDOR**", SYSFS{product}="**PRODUCT**", NAME="usb/%k", SYMLINK="DEVICE", RUN+="/path/to/your/script-to-sync-media"
-  ```
+sudo mount /dev/sdg1 /media/center
+if grep -qs '/media/center' /proc/mounts; then
+        sleep 5
+        sudo rsync -rvP --ignore-existing /media/center/TV\ Shows/ /home/korey/Videos/TV\ Shows/
+        sudo rsync -rvP --ignore-existing /media/center/Movies/ /home/korey/Videos/Movies/
+     else
+        echo "System not mounted"
+        exit 1
+fi
+
+sudo umount /media/center
+sleep 5
+
+if grep -qs '/media/center' /proc/mounts; then
+        echo "System is still mounted,!!DO NOT EJECT!!"
+     else
+         echo "System has been successfully, synced and unmounted"
+fi
+```
